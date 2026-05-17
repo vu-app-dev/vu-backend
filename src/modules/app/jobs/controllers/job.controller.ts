@@ -85,6 +85,19 @@ export class JobController {
       },
     },
   })
+  @ApiQuery({
+    name: 'sort',
+    required: false,
+    style: 'deepObject',
+    explode: true,
+    schema: {
+      type: 'object',
+      properties: {
+        field: { type: 'string', example: 'createdAt' },
+        dir: { type: 'string', example: 'DESC' },
+      },
+    },
+  })
   @ApiOkResponse({ description: 'Paginated jobs response' })
   async getPaginatedJobs(
     @CurrentUser() user: User,

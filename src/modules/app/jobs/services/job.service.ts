@@ -12,6 +12,8 @@ import { UpdateJobInput } from '../inputs/update-job.input';
 import { PaginatedJobQueryInput } from '../inputs/paginated-job-query.input';
 import { PaginatedResponse } from 'src/common/types/paginated-response.type';
 import { AppHelperService } from 'src/modules/core/helper/helper.services';
+import { SortDirectionEnum } from 'src/common/enums/sort.enum';
+import { JobSortFieldsEnum } from '../enums/job-sort-fields.enum';
 
 @Injectable()
 export class JobService {
@@ -42,7 +44,7 @@ export class JobService {
     user: User,
   ): Promise<PaginatedResponse<Job>> {
     const companyId = user.companyUser.companyId;
-    const { filter, paginate } = query;
+    const { filter, paginate, sort } = query;
 
     const qb = this.jobRepo
       .createQueryBuilder('job')
@@ -76,8 +78,19 @@ export class JobService {
     const page = paginate?.page || 1,
       limit = paginate?.limit || 10;
 
+    const sortDirection = sort?.dir || SortDirectionEnum.DESC;
+
+    switch (sort?.field) {
+      case JobSortFieldsEnum.TITLE:
+        qb.orderBy('job.title', sortDirection);
+        break;
+      case JobSortFieldsEnum.CREATED_AT:
+      default:
+        qb.orderBy('job.createdAt', sortDirection);
+        break;
+    }
+
     const [items, total] = await qb
-      .orderBy('job.createdAt', 'DESC')
       .take(limit)
       .skip((page - 1) * limit)
       .getManyAndCount();

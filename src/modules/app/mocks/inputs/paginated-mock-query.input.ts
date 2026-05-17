@@ -10,7 +10,9 @@ import { Transform, Type } from 'class-transformer';
 import { PaginateInput } from 'src/common/inputs/paginate.input';
 import { DifficultyEnum } from '../enums/difficulty.enum';
 import { MockTypeEnum } from '../enums/mock-type.enum';
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { SortDirectionEnum } from 'src/common/enums/sort.enum';
+import { MockSortFieldsEnum } from '../enums/mock-sort-fields.enum';
 
 export class MockFilterInput {
   @ApiPropertyOptional({
@@ -61,10 +63,33 @@ export class MockFilterInput {
   enableRecordReplay?: boolean;
 }
 
+export class MockSortInput {
+  @ApiPropertyOptional({
+    enum: SortDirectionEnum,
+    example: SortDirectionEnum.DESC,
+  })
+  @IsOptional()
+  @IsEnum(SortDirectionEnum)
+  dir?: SortDirectionEnum;
+
+  @ApiProperty({
+    enum: MockSortFieldsEnum,
+    example: MockSortFieldsEnum.CREATED_AT,
+  })
+  @IsEnum(MockSortFieldsEnum)
+  field: MockSortFieldsEnum;
+}
+
 export class PaginatedMockQueryInput extends PaginateInput {
   @ApiPropertyOptional({ type: () => MockFilterInput })
   @ValidateNested()
   @Type(() => MockFilterInput)
   @IsOptional()
   filter?: MockFilterInput;
+
+  @ApiPropertyOptional({ type: () => MockSortInput })
+  @ValidateNested()
+  @Type(() => MockSortInput)
+  @IsOptional()
+  sort?: MockSortInput;
 }
