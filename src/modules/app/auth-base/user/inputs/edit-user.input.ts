@@ -22,6 +22,12 @@ export class EditUserInput extends PartialType(
   phone?: string;
 
   @ApiPropertyOptional({
+    example: 'HR Specialist',
+    description: 'Updated job title',
+  })
+  jobTitle?: string;
+
+  @ApiPropertyOptional({
     example: 'https://cdn.example.com/profiles/aya-new.jpg',
     description: 'Updated profile image URL',
   })

@@ -75,6 +75,15 @@ export class RegisterUserInput {
   phone: string;
 
   @ApiPropertyOptional({
+    example: 'HR Specialist',
+    description: 'User job title',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(60)
+  jobTitle?: string;
+
+  @ApiPropertyOptional({
     example: 'https://cdn.example.com/profiles/aya.jpg',
     description: 'Optional profile image URL',
   })

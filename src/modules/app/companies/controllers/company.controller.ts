@@ -1,4 +1,4 @@
-import { Body, Controller, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Query } from '@nestjs/common';
 import { CompanyService } from '../services/company.service';
 import { ReplyJoinRequestInput } from '../inputs/reply-join-request.input';
 import { CompanyAuth } from 'src/common/decorators/company-auth.decorator';
@@ -6,15 +6,20 @@ import { CompanyUserTypeEnum } from '../enums/company-user-type.enum';
 import { EditCompanyInput } from '../inputs/edit-company.input';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { User } from '../../auth-base/user/entities/user.entity';
+import { Company } from '../entities/company.entity';
 import {
   ApiExtraModels,
   ApiBearerAuth,
   ApiBody,
   ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiTags,
   getSchemaPath,
 } from '@nestjs/swagger';
+import { PaginatedResponse } from 'src/common/types/paginated-response.type';
+import { CompanyUser } from '../entities/company-user.entity';
+import { PaginatedCompanyUsersQueryInput } from '../inputs/paginated-company-users-query.input';
 
 @ApiExtraModels(ReplyJoinRequestInput, EditCompanyInput)
 @ApiTags('Companies')
@@ -81,6 +86,67 @@ export class CompanyController {
     return await this.companyService.removeUserFromCompany(
       userId,
       user.companyUser.companyId,
+    );
+  }
+
+  @CompanyAuth({
+    types: [CompanyUserTypeEnum.OWNER],
+  })
+  @Get('join_requests')
+  @ApiOperation({ summary: 'List pending join requests for current company' })
+  @ApiOkResponse({ description: 'Pending join requests returned' })
+  async getJoinRequests(@CurrentUser() user: User) {
+    return await this.companyService.getJoinRequests(
+      user.companyUser.companyId,
+    );
+  }
+
+  @CompanyAuth()
+  @Get('info')
+  @ApiOperation({ summary: 'Get current company information' })
+  @ApiOkResponse({ type: Company })
+  async getCompanyInfo(@CurrentUser() user: User): Promise<Company> {
+    return this.companyService.getCompanyById(user.companyUser.companyId);
+  }
+
+  @CompanyAuth({
+    types: [CompanyUserTypeEnum.OWNER, CompanyUserTypeEnum.EDITOR],
+  })
+  @Get('users')
+  @ApiOperation({ summary: 'Get paginated company users' })
+  @ApiQuery({
+    name: 'paginate',
+    required: false,
+    style: 'deepObject',
+    explode: true,
+    schema: {
+      type: 'object',
+      properties: {
+        page: { type: 'number', example: 1 },
+        limit: { type: 'number', example: 10 },
+      },
+    },
+  })
+  @ApiQuery({
+    name: 'filter',
+    required: false,
+    style: 'deepObject',
+    explode: true,
+    schema: {
+      type: 'object',
+      properties: {
+        search: { type: 'string', example: 'aya' },
+      },
+    },
+  })
+  @ApiOkResponse({ description: 'Paginated company users response' })
+  async getPaginatedCompanyUsers(
+    @CurrentUser() user: User,
+    @Query() query: PaginatedCompanyUsersQueryInput,
+  ): Promise<PaginatedResponse<CompanyUser>> {
+    return this.companyService.getPaginatedCompanyUsers(
+      user.companyUser.companyId,
+      query,
     );
   }
 
