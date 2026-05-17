@@ -59,7 +59,7 @@ export class CreateJobInput {
   @IsString()
   @IsNotEmpty()
   @MaxLength(255)
-  @MinLength(10)
+  @MinLength(3)
   requirements: string;
 
   @ApiProperty({

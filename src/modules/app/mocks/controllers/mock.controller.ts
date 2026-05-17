@@ -87,6 +87,19 @@ export class MockController {
       },
     },
   })
+  @ApiQuery({
+    name: 'sort',
+    required: false,
+    style: 'deepObject',
+    explode: true,
+    schema: {
+      type: 'object',
+      properties: {
+        field: { type: 'string', example: 'createdAt' },
+        dir: { type: 'string', example: 'DESC' },
+      },
+    },
+  })
   @ApiOkResponse({ description: 'Paginated mocks response' })
   async getPaginatedMocks(
     @CurrentUser() user: User,

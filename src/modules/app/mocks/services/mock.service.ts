@@ -16,6 +16,7 @@ import { PaginatedResponse } from 'src/common/types/paginated-response.type';
 import { Job } from '../../jobs/entities/job.entity';
 import { JobMock } from '../../jobs/entities/job-mock.entity';
 import { SortDirectionEnum } from 'src/common/enums/sort.enum';
+import { MockSortFieldsEnum } from '../enums/mock-sort-fields.enum';
 
 @Injectable()
 export class MockService {
@@ -48,7 +49,7 @@ export class MockService {
     user: User,
   ): Promise<PaginatedResponse<Mock>> {
     const companyId = user.companyUser.companyId;
-    const { filter, paginate } = query;
+    const { filter, paginate, sort } = query;
 
     const qb = this.mockRepo
       .createQueryBuilder('mock')
@@ -89,8 +90,19 @@ export class MockService {
     const page = paginate?.page || 1,
       limit = paginate?.limit || 10;
 
+    const sortDirection = sort?.dir || SortDirectionEnum.DESC;
+
+    switch (sort?.field) {
+      case MockSortFieldsEnum.TITLE:
+        qb.orderBy('mock.title', sortDirection);
+        break;
+      case MockSortFieldsEnum.CREATED_AT:
+      default:
+        qb.orderBy('mock.createdAt', sortDirection);
+        break;
+    }
+
     const [items, total] = await qb
-      .orderBy('mock.createdAt', 'DESC')
       .take(limit)
       .skip((page - 1) * limit)
       .getManyAndCount();
