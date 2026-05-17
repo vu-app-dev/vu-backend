@@ -1,4 +1,9 @@
-import { IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { PaginateInput } from 'src/common/inputs/paginate.input';
 import { ApiPropertyOptional } from '@nestjs/swagger';

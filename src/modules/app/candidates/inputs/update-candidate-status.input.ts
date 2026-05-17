@@ -9,6 +9,10 @@ export class UpdateCandidateStatusInput {
     description: 'Final decision for candidate',
   })
   @IsEnum(CandidateStatusEnum)
-  @IsIn([CandidateStatusEnum.ACCEPTED, CandidateStatusEnum.REJECTED, CandidateStatusEnum.SHORTLISTED])
+  @IsIn([
+    CandidateStatusEnum.ACCEPTED,
+    CandidateStatusEnum.REJECTED,
+    CandidateStatusEnum.SHORTLISTED,
+  ])
   status: CandidateStatusEnum;
 }
