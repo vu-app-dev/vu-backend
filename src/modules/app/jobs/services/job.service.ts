@@ -100,7 +100,7 @@ export class JobService {
     }
 
     const status: JobStatusEnum =
-      +startDate < new Date().getTime()
+      +startDate > new Date().getTime()
         ? JobStatusEnum.SCHEDULED
         : JobStatusEnum.ACTIVE;
 
@@ -137,7 +137,7 @@ export class JobService {
     const end = endDate ?? job.endDate.getTime();
 
     const status: JobStatusEnum =
-      +start < new Date().getTime()
+      +start > new Date().getTime()
         ? JobStatusEnum.SCHEDULED
         : JobStatusEnum.ACTIVE;
 
