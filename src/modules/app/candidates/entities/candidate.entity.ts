@@ -44,7 +44,7 @@ export class Candidate extends BaseModel {
   @Column({
     type: 'enum',
     enum: CandidateStatusEnum,
-    default: CandidateStatusEnum.SHORTLISTED,
+    default: CandidateStatusEnum.PENDING,
   })
   status: CandidateStatusEnum;
 
