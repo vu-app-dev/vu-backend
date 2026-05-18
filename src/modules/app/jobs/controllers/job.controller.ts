@@ -50,9 +50,8 @@ export class JobController {
   @ApiOkResponse({ type: Job })
   async getJob(
     @Param('jobId', ParseUUIDPipe) jobId: string,
-    @CurrentUser() user: User,
   ): Promise<Job> {
-    return this.jobService.getJob(jobId, user);
+    return this.jobService.getJob(jobId);
   }
 
   @Get('get_paginated')

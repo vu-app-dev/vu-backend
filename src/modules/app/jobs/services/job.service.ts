@@ -25,7 +25,7 @@ export class JobService {
     @InjectRepository(Mock) private readonly mockRepo: Repository<Mock>,
   ) {}
 
-  async getJob(jobId: string, user: User) {
+  async getJob(jobId: string) {
     const job = await this.jobRepo.findOne({
       where: { id: jobId },
       relations: { jobMocks: { mock: true } },
@@ -34,7 +34,7 @@ export class JobService {
     if (!job)
       throw new HttpException('Job Not Found', StatusCodeEnum.JOB_NOT_FOUND);
 
-    this.validateJobUser(job, user);
+    //this.validateJobUser(job, user);
 
     return job;
   }
