@@ -39,7 +39,7 @@ export class JobController {
   constructor(private readonly jobService: JobService) {}
 
   // ------------------------------- Get --------------------------------------- //
-  @CompanyAuth()
+  // @CompanyAuth()   TODO: Review returned object
   @Get('get/:jobId')
   @ApiOperation({ summary: 'Get job details by ID' })
   @ApiParam({
