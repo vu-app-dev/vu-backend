@@ -14,6 +14,8 @@ async function bootstrap() {
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+  app.enableCors();
+
   app.set('query parser', 'extended');
 
   app.useStaticAssets(join(__dirname, '..', 'public'), {
