@@ -18,12 +18,20 @@ async function bootstrap() {
     app.enableCors();
   } else {
     app.enableCors({
-      origin: '.vuapp.dev',
-      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+      origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+
+        const allowed = origin.endsWith('.vuapp.dev');
+
+        if (allowed) {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+      },
       credentials: true,
     });
   }
-
   app.set('query parser', 'extended');
 
   app.useStaticAssets(join(__dirname, '..', 'public'), {
