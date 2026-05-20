@@ -120,10 +120,22 @@ export class AuthController {
       properties: {
         input: { $ref: getSchemaPath(RequestVerificationCodeInput) },
       },
-      example: {
-        input: {
-          email: 'candidate@acme.com',
-          useCase: 'EMAIL_VERIFICATION',
+      examples: {
+        emailVerification: {
+          value: {
+            input: {
+              email: 'candidate@acme.com',
+              useCase: 'EMAIL_VERIFICATION',
+            },
+          },
+        },
+        passwordReset: {
+          value: {
+            input: {
+              email: 'candidate@acme.com',
+              useCase: 'PASSWORD_RESET',
+            },
+          },
         },
       },
     },
