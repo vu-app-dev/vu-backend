@@ -14,7 +14,13 @@ async function bootstrap() {
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  app.enableCors();
+  if (process.env.NODE_ENV === 'development') {
+    app.enableCors();
+  } else {
+    app.enableCors({
+      origin: /\.vuapp\.dev$/,
+    });
+  }
 
   app.set('query parser', 'extended');
 

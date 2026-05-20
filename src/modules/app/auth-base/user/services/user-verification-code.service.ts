@@ -26,7 +26,7 @@ export class UserVerificationCodeService {
       code:
         process.env.NODE_ENV === 'development'
           ? '1234'
-          : '1234',// REVIEW: this.helper.createRandomCodeNumber(4),
+          : this.helper.createRandomCodeNumber(4),
       expireAt: new Date(Date.now() + 15 * 60 * 1000),
     });
   }

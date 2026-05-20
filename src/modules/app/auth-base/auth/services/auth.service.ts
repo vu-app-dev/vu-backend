@@ -20,7 +20,6 @@ import { SessionService } from '../../session/services/session.service';
 import { UserVerificationCodeUseCaseEnum } from '../../user/enums/user-verification-code.enum';
 import { UserTypeEnum } from '../../user/enums/user.enum';
 import { AuthHelperService } from 'src/modules/core/helper/auth-helper.service';
-import { LoginResponse } from '../responses/login.response';
 
 @Injectable()
 export class AuthService {
@@ -48,9 +47,9 @@ export class AuthService {
 
   private async registerUser(input: RegisterUserInput, userType: UserTypeEnum) {
     const isUserExist = await this.userRepo.findOne({
-      where: { email: input.email },
+      where: { email: input.email, verified: true },
     });
-    if (isUserExist && isUserExist.verified) {
+    if (isUserExist) {
       throw new HttpException(
         'User Email Already Exist',
         StatusCodeEnum.ALREADY_EXIST,
@@ -75,11 +74,6 @@ export class AuthService {
       password: await this.authHelper.hashPassword(input.password),
     });
 
-    await this.userVerificationCodeService.createVerificationCode(
-      newUser.id,
-      UserVerificationCodeUseCaseEnum.EMAIL_VERIFICATION,
-    );
-
     return newUser;
   }
 
@@ -94,6 +88,15 @@ export class AuthService {
     switch (useCase) {
       case UserVerificationCodeUseCaseEnum.EMAIL_VERIFICATION:
         await this.handleEmailVerificationRequest(user);
+        break;
+      case UserVerificationCodeUseCaseEnum.PASSWORD_RESET:
+        await this.handlePasswordResetRequest(user);
+        break;
+      default:
+        throw new HttpException(
+          'Invalid Verification Code Use Case',
+          StatusCodeEnum.BAD_REQUEST,
+        );
     }
     return true;
   }
@@ -106,16 +109,38 @@ export class AuthService {
       );
     }
     const verificationCode =
-      await this.userVerificationCodeService.getUserVerificationCode(
+      await this.userVerificationCodeService.createVerificationCode(
         user.id,
         UserVerificationCodeUseCaseEnum.EMAIL_VERIFICATION,
       );
 
-    /* await this.mailService.sendMail(
+    await this.mailService.sendMail(
       user.email,
       `VU Account Verification Code`,
       `Your Request VerificationCode for VU Account is ${verificationCode.code}`,
-    ); */
+    );
+
+    return true;
+  }
+
+  async handlePasswordResetRequest(user: User) {
+    if (!user.verified) {
+      throw new HttpException('Forbidden', StatusCodeEnum.FORBIDDEN);
+    }
+
+    const verificationCode =
+      await this.userVerificationCodeService.createVerificationCode(
+        user.id,
+        UserVerificationCodeUseCaseEnum.PASSWORD_RESET,
+      );
+
+    await this.mailService.sendMail(
+      user.email,
+      `VU Password Reset Code`,
+      `Your Password Reset Request VerificationCode for VU Account is ${verificationCode.code}`,
+    );
+
+    return true;
   }
 
   async verifyEmailVerificationCode(input: VerifyEmailVerificationCodeInput) {
