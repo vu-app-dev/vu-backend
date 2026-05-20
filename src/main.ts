@@ -21,7 +21,7 @@ async function bootstrap() {
       origin: (origin, callback) => {
         if (!origin) return callback(null, true);
 
-        const allowed = origin.endsWith('.vuapp.dev');
+        const allowed = origin.endsWith('vuapp.dev');
 
         if (allowed) {
           callback(null, true);
