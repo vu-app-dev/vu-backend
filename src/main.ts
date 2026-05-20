@@ -18,7 +18,7 @@ async function bootstrap() {
     app.enableCors();
   } else {
     app.enableCors({
-      origin: '.vuapp.com',
+      origin: '.vuapp.dev',
       methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
       credentials: true,
     });
