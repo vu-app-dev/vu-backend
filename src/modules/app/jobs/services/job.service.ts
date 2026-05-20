@@ -54,6 +54,8 @@ export class JobService {
         startDate: true,
         endDate: true,
         jobMocks: {
+          id: true,
+          isActive: true,
           mock: {
             id: true,
             description: true,
