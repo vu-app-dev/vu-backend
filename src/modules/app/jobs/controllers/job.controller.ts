@@ -39,7 +39,21 @@ export class JobController {
   constructor(private readonly jobService: JobService) {}
 
   // ------------------------------- Get --------------------------------------- //
-  // @CompanyAuth()   TODO: Review returned object
+  @Get('public-get/:jobId')
+  @ApiOperation({ summary: 'Get job details by ID' })
+  @ApiParam({
+    name: 'jobId',
+    format: 'uuid',
+    example: 'f168e302-f8a4-4cd4-9f7e-f09180f48eec',
+  })
+  @ApiOkResponse({ type: Job })
+  async getPublicJob(
+    @Param('jobId', ParseUUIDPipe) jobId: string
+  ): Promise<Job> {
+    return this.jobService.getPublicJob(jobId);
+  }
+
+  @CompanyAuth()
   @Get('get/:jobId')
   @ApiOperation({ summary: 'Get job details by ID' })
   @ApiParam({
@@ -50,8 +64,9 @@ export class JobController {
   @ApiOkResponse({ type: Job })
   async getJob(
     @Param('jobId', ParseUUIDPipe) jobId: string,
+    @CurrentUser() user: User,
   ): Promise<Job> {
-    return this.jobService.getJob(jobId);
+    return this.jobService.getJob(jobId, user);
   }
 
   @Get('get_paginated')

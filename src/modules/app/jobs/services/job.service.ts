@@ -25,7 +25,7 @@ export class JobService {
     @InjectRepository(Mock) private readonly mockRepo: Repository<Mock>,
   ) {}
 
-  async getJob(jobId: string) {
+  async getJob(jobId: string, user: User): Promise<Job> {
     const job = await this.jobRepo.findOne({
       where: { id: jobId },
       relations: { jobMocks: { mock: true } },
@@ -34,7 +34,46 @@ export class JobService {
     if (!job)
       throw new HttpException('Job Not Found', StatusCodeEnum.JOB_NOT_FOUND);
 
-    //this.validateJobUser(job, user);
+    this.validateJobUser(job, user);
+
+    return job;
+  }
+
+  async getPublicJob(jobId: string): Promise<Job> {
+    const job = await this.jobRepo.findOne({
+      where: { id: jobId },
+      relations: { jobMocks: { mock: true } },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        requirements: true,
+        departments: true,
+        type: true,
+        status: true,
+        startDate: true,
+        endDate: true,
+        jobMocks: {
+          mock: {
+            id: true,
+            description: true,
+            type: true,
+            difficulty: true,
+            enableFollowUpQuestions: true,
+            enableRecordReplay: true,
+            topics: true,
+            title: true,
+            technologies: true,
+            estimatedTimeInMinutes: true
+          }
+        }
+      }
+    });
+
+    if(!job || job.status === JobStatusEnum.CLOSED)
+      throw new HttpException('Job Not Found', StatusCodeEnum.JOB_NOT_FOUND);
+
+    job.jobMocks = job.jobMocks?.filter((jm) => jm.isActive);
 
     return job;
   }
