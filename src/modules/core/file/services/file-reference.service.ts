@@ -18,6 +18,7 @@ export class FileReferenceService {
     const files = await this.fileRepository.find({
       where: {
         url: In(urls),
+        hasReferenceAtDatabase: false,
       },
     });
 
@@ -41,6 +42,7 @@ export class FileReferenceService {
     const files = await this.fileRepository.find({
       where: {
         url: In(urls),
+        hasReferenceAtDatabase: true,
       },
     });
 
