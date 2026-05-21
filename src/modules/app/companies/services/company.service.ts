@@ -8,11 +8,12 @@ import { CompanyUser } from '../entities/company-user.entity';
 import { ReplyJoinRequestInput } from '../inputs/reply-join-request.input';
 import { MailService } from 'src/modules/core/mail/services/mail.service';
 import { CompanyUserTypeEnum } from '../enums/company-user-type.enum';
-import { User } from '../../auth-base/user/entities/user.entity';
 import { EditCompanyInput } from '../inputs/edit-company.input';
 import { AppHelperService } from 'src/modules/core/helper/helper.services';
 import { PaginatedResponse } from 'src/common/types/paginated-response.type';
 import { PaginatedCompanyUsersQueryInput } from '../inputs/paginated-company-users-query.input';
+import { FileReferenceService } from 'src/modules/core/file/services/file-reference.service';
+import { FileModelNameEnum } from 'src/modules/core/file/enums/file-model.enum';
 
 @Injectable()
 export class CompanyService {
@@ -22,8 +23,8 @@ export class CompanyService {
     @InjectRepository(CompanyUser)
     private readonly companyUserRepo: Repository<CompanyUser>,
     private readonly mailService: MailService,
-    @InjectRepository(User) private readonly userRepo: Repository<User>,
     private readonly appHelper: AppHelperService,
+    private readonly fileReferenceService: FileReferenceService,
   ) {}
 
   async getCompanyById(id: string) {
@@ -51,7 +52,12 @@ export class CompanyService {
       );
     }
 
-    // TODO: validate logo url
+    if (input.logoUrl) {
+      await this.fileReferenceService.markFilesAsReferenced(
+        [input.logoUrl],
+        FileModelNameEnum.COMPANY,
+      );
+    }
 
     const newCompany = await this.companyRepo.save({
       ...input,
@@ -176,6 +182,17 @@ export class CompanyService {
     const company = await this.getCompanyById(companyId);
     Object.assign(company, input);
     await this.companyRepo.save(company);
+
+    if (input.logoUrl && input.logoUrl !== company.logoUrl) {
+      await this.fileReferenceService.unmarkFilesAsReferenced([
+        company.logoUrl,
+      ]);
+      await this.fileReferenceService.markFilesAsReferenced(
+        [input.logoUrl],
+        FileModelNameEnum.COMPANY,
+      );
+    }
+
     return true;
   }
 

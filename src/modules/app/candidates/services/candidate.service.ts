@@ -13,6 +13,8 @@ import { CandidateSortFieldsEnum } from '../enums/candidate-sort-fields.enum';
 import { ApplyForJobInput } from '../inputs/apply-for-job.input';
 import { Job } from '../../jobs/entities/job.entity';
 import { Company } from '../../companies/entities/company.entity';
+import { FileReferenceService } from 'src/modules/core/file/services/file-reference.service';
+import { FileModelNameEnum } from 'src/modules/core/file/enums/file-model.enum';
 
 @Injectable()
 export class CandidateService {
@@ -20,6 +22,7 @@ export class CandidateService {
     @InjectRepository(Candidate)
     private readonly candidateRepo: Repository<Candidate>,
     private readonly appHelper: AppHelperService,
+    private readonly fileReferenceService: FileReferenceService,
   ) {}
 
   async applyForJob(
@@ -37,6 +40,11 @@ export class CandidateService {
       email,
       cvUrl,
     });
+
+    await this.fileReferenceService.markFilesAsReferenced(
+      [cvUrl],
+      FileModelNameEnum.CANDIDATE,
+    );
 
     await this.candidateRepo.save(candidate);
 

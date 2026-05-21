@@ -20,6 +20,8 @@ import { SessionService } from '../../session/services/session.service';
 import { UserVerificationCodeUseCaseEnum } from '../../user/enums/user-verification-code.enum';
 import { UserTypeEnum } from '../../user/enums/user.enum';
 import { AuthHelperService } from 'src/modules/core/helper/auth-helper.service';
+import { FileReferenceService } from 'src/modules/core/file/services/file-reference.service';
+import { FileModelNameEnum } from 'src/modules/core/file/enums/file-model.enum';
 
 @Injectable()
 export class AuthService {
@@ -30,6 +32,7 @@ export class AuthService {
     private readonly userVerificationCodeService: UserVerificationCodeService,
     private readonly sessionService: SessionService,
     private readonly mailService: MailService,
+    private readonly fileReferenceService: FileReferenceService,
   ) {}
 
   async registerCompanyManager(input: RegisterManagerInput): Promise<boolean> {
@@ -65,7 +68,12 @@ export class AuthService {
       );
     }
 
-    // TODO: validate profile pic url
+    if (input.profilePictureUrl) {
+      await this.fileReferenceService.markFilesAsReferenced(
+        [input.profilePictureUrl],
+        FileModelNameEnum.USER,
+      );
+    }
 
     const newUser = await this.userRepo.save({
       ...input,

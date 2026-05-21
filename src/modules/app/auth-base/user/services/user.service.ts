@@ -6,11 +6,14 @@ import { EditUserInput } from '../inputs/edit-user.input';
 import { ChangePasswordInput } from '../inputs/change-password.input';
 import * as bcrypt from 'bcrypt';
 import { StatusCodeEnum } from 'src/common/enums/status-code.enum';
+import { FileReferenceService } from 'src/modules/core/file/services/file-reference.service';
+import { FileModelNameEnum } from 'src/modules/core/file/enums/file-model.enum';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private readonly userRepo: Repository<User>,
+    private readonly fileReferenceService: FileReferenceService,
   ) {}
 
   async getUserById(id: string): Promise<User> {
@@ -30,6 +33,20 @@ export class UserService {
   async editUser(id: string, input: EditUserInput) {
     const user = await this.getUserById(id);
     Object.assign(user, input);
+
+    if (
+      input.profilePictureUrl &&
+      input.profilePictureUrl !== user.profilePictureUrl
+    ) {
+      await this.fileReferenceService.unmarkFilesAsReferenced([
+        user.profilePictureUrl,
+      ]);
+      await this.fileReferenceService.markFilesAsReferenced(
+        [input.profilePictureUrl],
+        FileModelNameEnum.USER,
+      );
+    }
+
     return await this.userRepo.save(user);
   }
 

@@ -12,23 +12,23 @@ export class FileReferenceService {
   ) {}
 
   async markFilesAsReferenced(
-    fileIds: string[],
+    urls: string[],
     modelName: FileModelNameEnum,
   ): Promise<void> {
     const files = await this.fileRepository.find({
       where: {
-        id: In(fileIds),
+        url: In(urls),
       },
     });
 
-    if (fileIds.length !== files.length) {
+    if (urls.length !== files.length) {
       throw new BadRequestException('One or more files do not exist.');
     }
 
     for (const file of files) {
       if (file.modelName !== modelName)
         throw new BadRequestException(
-          `File with ID ${file.id} does not belong to model ${modelName}.`,
+          `File with URL ${file.url} does not belong to model ${modelName}.`,
         );
 
       file.hasReferenceAtDatabase = true;
@@ -37,10 +37,10 @@ export class FileReferenceService {
     await this.fileRepository.save(files);
   }
 
-  async unmarkFilesAsReferenced(fileIds: string[]): Promise<void> {
+  async unmarkFilesAsReferenced(urls: string[]): Promise<void> {
     const files = await this.fileRepository.find({
       where: {
-        id: In(fileIds),
+        url: In(urls),
       },
     });
 
