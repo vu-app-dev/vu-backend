@@ -9,6 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { CompanyAuth } from 'src/common/decorators/company-auth.decorator';
+import { ApiKeyAuth } from 'src/common/decorators/api-key-auth.decorator';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { User } from '../../auth-base/user/entities/user.entity';
 import { CandidateService } from '../services/candidate.service';
@@ -18,6 +19,10 @@ import { PaginatedCandidateQueryInput } from '../inputs/paginated-candidate-quer
 import { CompanyUserTypeEnum } from '../../companies/enums/company-user-type.enum';
 import { UpdateCandidateStatusInput } from '../inputs/update-candidate-status.input';
 import { ApplyForJobInput } from '../inputs/apply-for-job.input';
+import { CreatePerformanceInput } from '../inputs/create-performance.input';
+import { CreateCvAnalysisInput } from '../inputs/create-cv-analysis.input';
+import { CreateQuestionInput } from '../inputs/create-question.input';
+import { UpdatePerformanceCheatInput } from '../inputs/update-performance-cheat.input';
 import {
   ApiExtraModels,
   ApiBearerAuth,
@@ -30,7 +35,14 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 
-@ApiExtraModels(ApplyForJobInput, UpdateCandidateStatusInput)
+@ApiExtraModels(
+  ApplyForJobInput,
+  UpdateCandidateStatusInput,
+  CreatePerformanceInput,
+  CreateCvAnalysisInput,
+  CreateQuestionInput,
+  UpdatePerformanceCheatInput,
+)
 @ApiTags('Candidates')
 @Controller('candidates')
 export class CandidateController {
@@ -186,5 +198,107 @@ export class CandidateController {
       input,
       user,
     );
+  }
+
+  // AI Service Endpoints (API Key Auth)
+
+  @ApiKeyAuth()
+  @Post(':candidateId/performance')
+  @ApiOperation({ summary: 'Create candidate performance (AI service)' })
+  @ApiParam({ name: 'candidateId', format: 'uuid' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        score: { type: 'number' },
+        cheat: { type: 'string' },
+        communication: { type: 'number' },
+        problemSolving: { type: 'number' },
+        technical: { type: 'number' },
+        confidence: { type: 'number' },
+        eyeContact: { type: 'number' },
+        speaking: { type: 'number' },
+        clarityOfExplanation: { type: 'number' },
+        structuredThinking: { type: 'number' },
+        askingClarifications: { type: 'number' },
+        overallSummary: { type: 'string' },
+        videoUrl: { type: 'string' },
+      },
+    },
+  })
+  @ApiOkResponse({ description: 'Performance created' })
+  async createPerformance(
+    @Param('candidateId', ParseUUIDPipe) candidateId: string,
+    @Body() input: CreatePerformanceInput,
+  ): Promise<boolean> {
+    return this.candidateService.createPerformance(candidateId, input);
+  }
+
+  @ApiKeyAuth()
+  @Post(':candidateId/cv-analysis')
+  @ApiOperation({ summary: 'Create candidate CV analysis (AI service)' })
+  @ApiParam({ name: 'candidateId', format: 'uuid' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        skills: { type: 'array', items: { type: 'string' } },
+        summary: { type: 'string' },
+        score: { type: 'number' },
+      },
+    },
+  })
+  @ApiOkResponse({ description: 'CV analysis created' })
+  async createCvAnalysis(
+    @Param('candidateId', ParseUUIDPipe) candidateId: string,
+    @Body() input: CreateCvAnalysisInput,
+  ): Promise<boolean> {
+    return this.candidateService.createCvAnalysis(candidateId, input);
+  }
+
+  @ApiKeyAuth()
+  @Post(':candidateId/questions')
+  @ApiOperation({ summary: 'Create candidate question (AI service)' })
+  @ApiParam({ name: 'candidateId', format: 'uuid' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        question: { type: 'string' },
+        answer: { type: 'string' },
+        aiFeedback: { type: 'string' },
+        strength: { type: 'array', items: { type: 'string' } },
+        areasToImprove: { type: 'array', items: { type: 'string' } },
+        score: { type: 'number' },
+        durationInMinutes: { type: 'number' },
+      },
+    },
+  })
+  @ApiOkResponse({ description: 'Question created' })
+  async createQuestion(
+    @Param('candidateId', ParseUUIDPipe) candidateId: string,
+    @Body() input: CreateQuestionInput,
+  ): Promise<boolean> {
+    return this.candidateService.createQuestion(candidateId, input);
+  }
+
+  @ApiKeyAuth()
+  @Patch(':candidateId/performance')
+  @ApiOperation({ summary: 'Update candidate performance cheat status (AI service)' })
+  @ApiParam({ name: 'candidateId', format: 'uuid' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        cheat: { type: 'string' },
+      },
+    },
+  })
+  @ApiOkResponse({ description: 'Performance cheat status updated' })
+  async updatePerformanceCheat(
+    @Param('candidateId', ParseUUIDPipe) candidateId: string,
+    @Body() input: UpdatePerformanceCheatInput,
+  ): Promise<boolean> {
+    return this.candidateService.updatePerformanceCheat(candidateId, input);
   }
 }

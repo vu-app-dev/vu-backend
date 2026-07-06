@@ -48,4 +48,7 @@ export class CandidatePerformance extends BaseModel {
 
   @Column({ nullable: true })
   videoUrl: string;
+
+  @Column({ type: 'text', nullable: true })
+  overallSummary: string;
 }

@@ -1,6 +1,9 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Candidate } from '../entities/candidate.entity';
+import { CandidateQuestion } from '../entities/candidate-question.entity';
+import { CandidateCvAnalysis } from '../entities/candidate-cv-analysis.entity';
+import { CandidatePerformance } from '../entities/candidate-performance.entity';
 import { Repository } from 'typeorm';
 import { User } from '../../auth-base/user/entities/user.entity';
 import { StatusCodeEnum } from 'src/common/enums/status-code.enum';
@@ -15,12 +18,22 @@ import { Job } from '../../jobs/entities/job.entity';
 import { Company } from '../../companies/entities/company.entity';
 import { FileReferenceService } from 'src/modules/core/file/services/file-reference.service';
 import { FileModelNameEnum } from 'src/modules/core/file/enums/file-model.enum';
+import { CreatePerformanceInput } from '../inputs/create-performance.input';
+import { CreateCvAnalysisInput } from '../inputs/create-cv-analysis.input';
+import { CreateQuestionInput } from '../inputs/create-question.input';
+import { UpdatePerformanceCheatInput } from '../inputs/update-performance-cheat.input';
 
 @Injectable()
 export class CandidateService {
   constructor(
     @InjectRepository(Candidate)
     private readonly candidateRepo: Repository<Candidate>,
+    @InjectRepository(CandidateQuestion)
+    private readonly questionRepo: Repository<CandidateQuestion>,
+    @InjectRepository(CandidateCvAnalysis)
+    private readonly cvAnalysisRepo: Repository<CandidateCvAnalysis>,
+    @InjectRepository(CandidatePerformance)
+    private readonly performanceRepo: Repository<CandidatePerformance>,
     private readonly appHelper: AppHelperService,
     private readonly fileReferenceService: FileReferenceService,
   ) {}
@@ -54,6 +67,11 @@ export class CandidateService {
   async getCandidate(candidateId: string, user: User) {
     const candidate = await this.candidateRepo.findOne({
       where: { id: candidateId },
+      relations: {
+        questions: true,
+        analysis: true,
+        performance: true,
+      },
     });
 
     if (!candidate)
@@ -161,6 +179,96 @@ export class CandidateService {
     candidate.status = status;
     await this.candidateRepo.save(candidate);
 
+    return true;
+  }
+
+  async createPerformance(candidateId: string, input: CreatePerformanceInput) {
+    const candidate = await this.candidateRepo.findOne({
+      where: { id: candidateId },
+    });
+    if (!candidate)
+      throw new HttpException(
+        'Candidate Not Found',
+        StatusCodeEnum.CANDIDATE_NOT_FOUND,
+      );
+
+    const existing = await this.performanceRepo.findOne({
+      where: { candidateId },
+    });
+    if (existing)
+      throw new HttpException(
+        'Performance already exists for this candidate',
+        StatusCodeEnum.CANDIDATE_NOT_FOUND,
+      );
+
+    const performance = this.performanceRepo.create({
+      ...input,
+      candidateId,
+    });
+    await this.performanceRepo.save(performance);
+    return true;
+  }
+
+  async createCvAnalysis(candidateId: string, input: CreateCvAnalysisInput) {
+    const candidate = await this.candidateRepo.findOne({
+      where: { id: candidateId },
+    });
+    if (!candidate)
+      throw new HttpException(
+        'Candidate Not Found',
+        StatusCodeEnum.CANDIDATE_NOT_FOUND,
+      );
+
+    const existing = await this.cvAnalysisRepo.findOne({
+      where: { candidateId },
+    });
+    if (existing)
+      throw new HttpException(
+        'CV analysis already exists for this candidate',
+        StatusCodeEnum.CANDIDATE_NOT_FOUND,
+      );
+
+    const analysis = this.cvAnalysisRepo.create({
+      ...input,
+      candidateId,
+    });
+    await this.cvAnalysisRepo.save(analysis);
+    return true;
+  }
+
+  async createQuestion(candidateId: string, input: CreateQuestionInput) {
+    const candidate = await this.candidateRepo.findOne({
+      where: { id: candidateId },
+    });
+    if (!candidate)
+      throw new HttpException(
+        'Candidate Not Found',
+        StatusCodeEnum.CANDIDATE_NOT_FOUND,
+      );
+
+    const question = this.questionRepo.create({
+      ...input,
+      candidateId,
+    });
+    await this.questionRepo.save(question);
+    return true;
+  }
+
+  async updatePerformanceCheat(
+    candidateId: string,
+    input: UpdatePerformanceCheatInput,
+  ) {
+    const performance = await this.performanceRepo.findOne({
+      where: { candidateId },
+    });
+    if (!performance)
+      throw new HttpException(
+        'Performance Not Found',
+        StatusCodeEnum.CANDIDATE_NOT_FOUND,
+      );
+
+    performance.cheat = input.cheat;
+    await this.performanceRepo.save(performance);
     return true;
   }
 
