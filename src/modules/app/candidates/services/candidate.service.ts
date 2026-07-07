@@ -42,11 +42,10 @@ export class CandidateService {
     companyId: string,
     jobId: string,
     input: ApplyForJobInput,
-  ): Promise<boolean> {
+  ): Promise<{ candidateId: string }> {
     const { name, email, cvUrl } = input;
 
-    let candidate = this.candidateRepo.create({
-      // QUES: should I add job and company?
+    const candidate = this.candidateRepo.create({
       jobId,
       companyId,
       name,
@@ -59,9 +58,9 @@ export class CandidateService {
       FileModelNameEnum.CANDIDATE,
     );
 
-    await this.candidateRepo.save(candidate);
+    const saved = await this.candidateRepo.save(candidate);
 
-    return true;
+    return { candidateId: saved.id };
   }
 
   async getCandidate(candidateId: string, user: User) {

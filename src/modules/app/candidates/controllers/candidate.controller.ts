@@ -157,7 +157,7 @@ export class CandidateController {
     @Param('companyId', ParseUUIDPipe) companyId: string,
     @Param('jobId', ParseUUIDPipe) jobId: string,
     @Body('input') input: ApplyForJobInput,
-  ): Promise<boolean> {
+  ): Promise<{ candidateId: string }> {
     return this.candidateService.applyForJob(companyId, jobId, input);
   }
 
