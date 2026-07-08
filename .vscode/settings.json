@@ -4,5 +4,6 @@
     "vuapp"
   ],
   "editor.acceptSuggestionOnEnter": "on",
-  "editor.tabCompletion": "on"
+  "editor.tabCompletion": "on",
+  "js/ts.experimental.useTsgo": false
 }
