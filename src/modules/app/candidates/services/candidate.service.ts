@@ -197,7 +197,7 @@ export class CandidateService {
     if (existing)
       throw new HttpException(
         'Performance already exists for this candidate',
-        StatusCodeEnum.CANDIDATE_NOT_FOUND,
+        StatusCodeEnum.PERFORMANCE_ALREADY_EXISTS,
       );
 
     const performance = this.performanceRepo.create({
@@ -224,7 +224,7 @@ export class CandidateService {
     if (existing)
       throw new HttpException(
         'CV analysis already exists for this candidate',
-        StatusCodeEnum.CANDIDATE_NOT_FOUND,
+        StatusCodeEnum.CV_ANALYSIS_ALREADY_EXISTS,
       );
 
     const analysis = this.cvAnalysisRepo.create({
@@ -263,7 +263,7 @@ export class CandidateService {
     if (!performance)
       throw new HttpException(
         'Performance Not Found',
-        StatusCodeEnum.CANDIDATE_NOT_FOUND,
+        StatusCodeEnum.PERFORMANCE_NOT_FOUND,
       );
 
     performance.cheat = input.cheat;
