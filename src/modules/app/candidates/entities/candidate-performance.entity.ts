@@ -13,37 +13,37 @@ export class CandidatePerformance extends BaseModel {
   @Column()
   candidateId: string;
 
-  @Column()
+  @Column({ type: 'float' })
   score: number;
 
   @Column({ type: 'enum', enum: CandidateCheatEnum })
   cheat: CandidateCheatEnum;
 
-  @Column()
+  @Column({ type: 'float' })
   communication: number;
 
-  @Column()
+  @Column({ type: 'float' })
   problemSolving: number;
 
-  @Column()
+  @Column({ type: 'float' })
   technical: number;
 
-  @Column()
+  @Column({ type: 'float' })
   confidence: number;
 
-  @Column()
+  @Column({ type: 'float' })
   eyeContact: number;
 
-  @Column()
+  @Column({ type: 'float' })
   speaking: number;
 
-  @Column()
+  @Column({ type: 'float' })
   clarityOfExplanation: number;
 
-  @Column()
+  @Column({ type: 'float' })
   structuredThinking: number;
 
-  @Column()
+  @Column({ type: 'float' })
   askingClarifications: number;
 
   @Column({ nullable: true })

@@ -16,10 +16,10 @@ export class CandidateQuestion extends BaseModel {
   @Column({ type: 'text' })
   question: string;
 
-  @Column()
+  @Column({ type: 'float' })
   durationInMinutes: number;
 
-  @Column()
+  @Column({ type: 'text' })
   answer: string;
 
   @Column({ type: 'text' })
@@ -31,6 +31,6 @@ export class CandidateQuestion extends BaseModel {
   @Column({ type: 'simple-array' })
   areasToImprove: string[];
 
-  @Column()
+  @Column({ type: 'float' })
   score: number;
 }
