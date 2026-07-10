@@ -66,6 +66,41 @@ export class CandidateController {
     return this.candidateService.getCandidate(candidateId, user);
   }
 
+  @CompanyAuth()
+  @Get('video/:candidateId')
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: 'Get optimized Cloudinary streaming URLs for a candidate video',
+  })
+  @ApiParam({
+    name: 'candidateId',
+    format: 'uuid',
+    example: 'deab2f9f-2507-4f26-9f39-069d95dce916',
+  })
+  @ApiOkResponse({
+    description: 'Cloudinary streaming URLs for the interview recording',
+    schema: {
+      type: 'object',
+      properties: {
+        publicId: { type: 'string' },
+        hlsUrl: {
+          type: 'string',
+          description: 'Adaptive-bitrate HLS manifest (preferred stream)',
+        },
+        mp4Url: {
+          type: 'string',
+          description: 'Quality-optimized MP4 fallback',
+        },
+      },
+    },
+  })
+  async getCandidateVideo(
+    @Param('candidateId', ParseUUIDPipe) candidateId: string,
+    @CurrentUser() user: User,
+  ) {
+    return this.candidateService.getCandidateVideo(candidateId, user);
+  }
+
   @Get('get_paginated')
   @CompanyAuth()
   @ApiBearerAuth('access-token')

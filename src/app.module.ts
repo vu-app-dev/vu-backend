@@ -12,6 +12,7 @@ import { HelperModule } from './modules/core/helper/helper.module';
 import { CompanyModule } from './modules/app/companies/company.module';
 import { UserModule } from './modules/app/auth-base/user/user.module';
 import { FileModule } from './modules/core/file/file.module';
+import { CloudinaryModule } from './modules/core/cloudinary/cloudinary.module';
 import { SessionModule } from './modules/app/auth-base/session/session.module';
 import { AppExceptionFilter } from './common/filters/exception.filter';
 import { MockModule } from './modules/app/mocks/mock.module';
@@ -41,6 +42,7 @@ import { CandidateModule } from './modules/app/candidates/candidate.module';
     AuthModule,
     SessionModule,
     FileModule,
+    CloudinaryModule,
     MockModule,
     JobModule,
     CandidateModule,
