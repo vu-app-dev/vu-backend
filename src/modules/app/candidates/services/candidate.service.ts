@@ -22,6 +22,10 @@ import { CreatePerformanceInput } from '../inputs/create-performance.input';
 import { CreateCvAnalysisInput } from '../inputs/create-cv-analysis.input';
 import { CreateQuestionInput } from '../inputs/create-question.input';
 import { UpdatePerformanceCheatInput } from '../inputs/update-performance-cheat.input';
+import {
+  CloudinaryService,
+  VideoStreamUrls,
+} from 'src/modules/core/cloudinary/services/cloudinary.service';
 
 @Injectable()
 export class CandidateService {
@@ -36,6 +40,7 @@ export class CandidateService {
     private readonly performanceRepo: Repository<CandidatePerformance>,
     private readonly appHelper: AppHelperService,
     private readonly fileReferenceService: FileReferenceService,
+    private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   async applyForJob(
@@ -82,6 +87,39 @@ export class CandidateService {
     this.validateCandidateUser(candidate, user);
 
     return candidate;
+  }
+
+  /**
+   * Resolves an optimized Cloudinary streaming payload for a candidate's
+   * interview recording. The stored value (performance.videoUrl) may be a
+   * Cloudinary public id or a full delivery URL; the Cloudinary service turns
+   * it into an adaptive HLS manifest plus an MP4 fallback.
+   */
+  async getCandidateVideo(
+    candidateId: string,
+    user: User,
+  ): Promise<VideoStreamUrls> {
+    const candidate = await this.candidateRepo.findOne({
+      where: { id: candidateId },
+      relations: { performance: true },
+    });
+
+    if (!candidate)
+      throw new HttpException(
+        'Candidate Not Found',
+        StatusCodeEnum.CANDIDATE_NOT_FOUND,
+      );
+
+    this.validateCandidateUser(candidate, user);
+
+    const videoRef = candidate.performance?.videoUrl || process.env.RECORD_EXAMPLE;
+    if (!videoRef)
+      throw new HttpException(
+        'No interview recording is available for this candidate',
+        StatusCodeEnum.VIDEO_NOT_FOUND,
+      );
+
+    return this.cloudinaryService.getStreamUrls(videoRef);
   }
 
   async getPaginatedCandidates(
