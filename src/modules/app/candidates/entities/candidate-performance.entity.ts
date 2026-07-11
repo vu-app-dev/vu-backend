@@ -43,7 +43,7 @@ export class CandidatePerformance extends BaseModel {
   @Column({ type: 'float' })
   structuredThinking: number;
 
-  @Column({ type: 'float' })
+  @Column({ type: 'float', nullable: true })
   askingClarifications: number;
 
   @Column({ nullable: true })

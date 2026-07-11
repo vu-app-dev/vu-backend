@@ -220,7 +220,7 @@ export class CandidateController {
         speaking: { type: 'number' },
         clarityOfExplanation: { type: 'number' },
         structuredThinking: { type: 'number' },
-        askingClarifications: { type: 'number' },
+        askingClarifications: { type: 'number', nullable: true },
         overallSummary: { type: 'string' },
         videoUrl: { type: 'string' },
       },
