@@ -50,10 +50,11 @@ export class CreatePerformanceInput {
   @Max(100)
   structuredThinking: number;
 
+  @IsOptional()
   @IsNumber()
   @Min(0)
   @Max(100)
-  askingClarifications: number;
+  askingClarifications?: number;
 
   @IsOptional()
   @IsString()
