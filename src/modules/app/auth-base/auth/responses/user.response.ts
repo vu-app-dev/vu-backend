@@ -4,6 +4,7 @@ import { User } from '../../user/entities/user.entity';
 export class UserResponse extends OmitType(User, ['password'] as const) {
   constructor(user: User) {
     super();
-    Object.assign(this, user);
+    const { password, ...rest } = user;
+    Object.assign(this, rest);
   }
 }
