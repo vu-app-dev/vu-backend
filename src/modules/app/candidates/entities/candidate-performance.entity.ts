@@ -31,13 +31,13 @@ export class CandidatePerformance extends BaseModel {
   @Column({ type: 'float' })
   confidence: number;
 
-  @Column({ type: 'float' })
+  @Column({ type: 'float', nullable: true })
   eyeContact: number;
 
-  @Column({ type: 'float' })
+  @Column({ type: 'float', nullable: true })
   speaking: number;
 
-  @Column({ type: 'float' })
+  @Column({ type: 'float', nullable: true })
   clarityOfExplanation: number;
 
   @Column({ type: 'float' })

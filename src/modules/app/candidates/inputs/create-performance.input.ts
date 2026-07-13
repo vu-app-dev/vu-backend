@@ -30,20 +30,23 @@ export class CreatePerformanceInput {
   @Max(100)
   confidence: number;
 
+  @IsOptional()
   @IsNumber()
   @Min(0)
   @Max(100)
-  eyeContact: number;
+  eyeContact?: number;
 
+  @IsOptional()
   @IsNumber()
   @Min(0)
   @Max(100)
-  speaking: number;
+  speaking?: number;
 
+  @IsOptional()
   @IsNumber()
   @Min(0)
   @Max(100)
-  clarityOfExplanation: number;
+  clarityOfExplanation?: number;
 
   @IsNumber()
   @Min(0)
