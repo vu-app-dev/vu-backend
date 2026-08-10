@@ -1,6 +1,6 @@
 # VU Backend
 
-NestJS backend for the VU platform — authentication, job/mock management, candidate pipeline, AI service integration, and video upload via Cloudinary.
+NestJS backend for the VU platform — authentication, job/mock management, candidate pipeline, and AI service integration.
 
 ## Tech Stack
 
@@ -13,8 +13,6 @@ NestJS backend for the VU platform — authentication, job/mock management, cand
 | Service Auth | API Key (`X-API-Key` header) | AI service → backend calls |
 | Validation | class-validator + class-transformer | DTO validation, `forbidNonWhitelisted` |
 | API Docs | Swagger (swagger-ui-express) | Auto-generated OpenAPI docs |
-| File Upload | Cloudinary | Video recording storage + streaming |
-| Mail | Nodemailer | Email verification (optional) |
 
 ## Quick Start
 
@@ -62,8 +60,6 @@ docker run -p 3000:3000 --env-file .env vu-backend
 | Mocks | `mocks/` | Interview mock templates, questions |
 | Candidates | `candidates/` | Candidate pipeline, AI results, performance |
 | File | `core/file/` | File upload handling |
-| Cloudinary | `core/cloudinary/` | Cloudinary integration for video uploads |
-| Mail | `core/mail/` | Email service (Nodemailer) |
 | Helper | `core/helper/` | Auth helpers, JWT utilities |
 
 ## API Endpoints
@@ -119,9 +115,6 @@ docker run -p 3000:3000 --env-file .env vu-backend
 | `AI_SERVICE_API_KEY` | Yes | — | Shared secret for AI service auth (must match AI service's `BACKEND_API_KEY`) |
 | `AI_SERVICE_URL` | No | `http://localhost:8000` | AI service URL |
 | `FRONTEND_URL` | No | `http://localhost:5173` | Frontend URL (CORS) |
-| `CLOUDINARY_CLOUD_NAME` | Optional | — | Cloudinary cloud name (for video uploads) |
-| `CLOUDINARY_API_KEY` | Optional | — | Cloudinary API key |
-| `CLOUDINARY_API_SECRET` | Optional | — | Cloudinary API secret |
 | `EMAIL_HOST` | Optional | `localhost` | SMTP host (for email verification) |
 | `EMAIL_PORT` | Optional | `587` | SMTP port |
 | `EMAIL_USERNAME` | Optional | — | SMTP username |
@@ -161,10 +154,8 @@ vu-backend/
 │       │   ├── jobs/              # Jobs
 │       │   └── mocks/             # Mock templates
 │       └── core/                  # Infrastructure modules
-│           ├── cloudinary/        # Video upload
 │           ├── file/              # File handling
-│           ├── helper/            # Auth helpers
-│           └── mail/              # Email
+│           └── helper/            # Auth helpers
 ├── Dockerfile
 └── package.json
 ```
